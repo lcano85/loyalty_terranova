@@ -1,0 +1,13 @@
+{
+  "name": "terranova/loyalty-api",
+  "description": "API PHP 8.2+ y MySQL para fidelización",
+  "require": {
+    "php": ">=8.2",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-mbstring": "*"
+  },
+  "scripts": {
+    "serve": "php -S localhost:6010 -t public public/router.php"
+  }
+}
