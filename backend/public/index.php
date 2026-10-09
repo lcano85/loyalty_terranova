@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 require dirname(__DIR__).'/src/bootstrap.php';
+require dirname(__DIR__).'/src/engagement.php';
 ini_set('display_errors','0');
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: no-referrer');
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $allowedOrigins = array_filter(array_map('trim', explode(',', env('FRONTEND_ALLOWED_ORIGINS', env('FRONTEND_URL','http://localhost:6012')))));
 if ($origin !== '' && !in_array($origin, $allowedOrigins, true)) fail('Origen no autorizado.',403);
@@ -44,6 +46,7 @@ try {
         unset($u['password_hash']); respond(['user'=>$u,'csrf'=>$_SESSION['csrf']]);
     }
     if ($path === '/api/logout' && $method === 'POST') {$_SESSION=[]; session_destroy(); respond(['ok'=>true]);}
+    handlePublicEngagement($path,$method);
     if (preg_match('#^/api/public/cards/([a-f0-9]{64})$#',$path,$m) && $method === 'GET') {
         $card=one("SELECT id,snapshot,stamps,status,created_at,updated_at FROM cards WHERE public_token=? AND status!='Revoked'",[$m[1]]);
         if (!$card) fail('Tarjeta no disponible.',404);
@@ -68,6 +71,7 @@ try {
         db()->commit(); respond($card,201);
     }
     $actor=user();
+    handleAdminEngagement($path,$method,$actor);
     if ($path === '/api/workspace' && $method === 'GET') {
         $customers=rows("SELECT cu.*, (SELECT COUNT(*) FROM cards c WHERE c.customer_id=cu.id AND c.status='Active') AS active_cards FROM customers cu ORDER BY created_at DESC");
         $cards=array_map('cardView',rows('SELECT c.*,cu.name AS customer_name,cu.email AS customer_email FROM cards c JOIN customers cu ON cu.id=c.customer_id ORDER BY c.created_at DESC'));
