@@ -5,4 +5,5 @@ require dirname(__DIR__).'/src/bootstrap.php';
 require dirname(__DIR__).'/src/migrations.php';
 migrateCustomerBirthDate();
 migratePromotionsNotifications();
+migrateCampaignBranding();
 echo "Migraciones completadas: fecha de nacimiento, promociones, notificaciones y solicitudes.\n";

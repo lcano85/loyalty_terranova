@@ -1,5 +1,9 @@
 <?php
 declare(strict_types=1);
+function migrateCampaignBranding(): void {
+    if (!one("SHOW COLUMNS FROM campaigns LIKE 'logo'")) db()->exec('ALTER TABLE campaigns ADD COLUMN logo MEDIUMTEXT NULL');
+    if (!one("SHOW COLUMNS FROM campaigns LIKE 'stamp_icon'")) db()->exec("ALTER TABLE campaigns ADD COLUMN stamp_icon VARCHAR(30) NOT NULL DEFAULT 'coffee'");
+}
 function migrateCustomerBirthDate(): void {
     if (!one("SHOW COLUMNS FROM customers LIKE 'birth_date'")) {
         db()->exec('ALTER TABLE customers ADD COLUMN birth_date DATE NULL DEFAULT NULL AFTER mobile');

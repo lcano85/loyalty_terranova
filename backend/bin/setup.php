@@ -10,6 +10,7 @@ db()->exec(file_get_contents(dirname(__DIR__).'/database/schema.sql'));
 require dirname(__DIR__).'/src/migrations.php';
 migrateCustomerBirthDate();
 migratePromotionsNotifications();
+migrateCampaignBranding();
 $password=env('SEED_OWNER_PASSWORD');
 if (!one("SELECT id FROM users WHERE role='owner'")) {
     if (strlen($password)<10) throw new RuntimeException('Configura SEED_OWNER_PASSWORD con al menos 10 caracteres.');

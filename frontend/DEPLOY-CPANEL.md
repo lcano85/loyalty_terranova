@@ -1,5 +1,20 @@
 # Publicar Terranova en cPanel
 
+## Actualización: logo e iconos de campañas
+
+Sube el backend y frontend actualizados. Antes de usar el editor, ejecuta
+`php bin/migrate.php` desde el backend del hosting (o, sin terminal, ejecuta una
+sola vez `database/migrations/20261020_campaign_branding.sql` en phpMyAdmin).
+No importes de nuevo el esquema completo. Recompila el frontend con las URL de
+producción y reinicia la aplicación Node.js.
+
+En Campañas → Editar puedes subir o quitar un logo PNG/JPG/WebP de hasta 200 KB
+y 2048 × 2048 píxeles, y elegir uno de diez iconos de sellos. El logo se guarda
+en MySQL, sin carpetas adicionales de subida. Las tarjetas ya emitidas conservan
+su diseño original; el cambio aplica a la campaña y a nuevas tarjetas.
+
+Validación local: `php backend/tests/campaign-branding.php` desde la raíz.
+
 Este paquete contiene el proyecto fuente. Necesita un hosting con Node.js (Setup Node.js App / Application Manager) y capacidad para compilar Next.js. No es un conjunto de archivos estáticos para un hosting exclusivo de PHP.
 
 ## 1. Dominio y SSL

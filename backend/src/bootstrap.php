@@ -54,7 +54,16 @@ function campaignData(array $data): array {
     if ($total === false || $total < 1 || $total > 40) fail('La meta debe tener entre 1 y 40 sellos.');
     $color = textField($data,'color',7); $bg = textField($data,'background',7);
     if (!preg_match('/^#[a-f0-9]{6}$/i',$color) || !preg_match('/^#[a-f0-9]{6}$/i',$bg)) fail('Color inválido.');
-    return [textField($data,'name'),textField($data,'tagline',255),textField($data,'reward',255),$total,$color,$bg];
+    $icon=textField($data,'stamp_icon',30,false) ?: 'coffee';
+    if (!in_array($icon,['coffee','beer','wine','pizza','utensils','star','heart','gift','flame','ice-cream'],true)) fail('Icono no válido.');
+    $logo=textField($data,'logo',280000,false);
+    if ($logo !== '') {
+        if (!preg_match('#^data:image/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$#D',$logo,$parts)) fail('Usa un logo PNG, JPG o WebP.');
+        $bytes=base64_decode($parts[2],true);
+        $info=$bytes === false ? false : @getimagesizefromstring($bytes);
+        if (!$info || strlen($bytes)>204800 || $info[0]>2048 || $info[1]>2048 || $info['mime']!=='image/'.$parts[1]) fail('El logo debe ser válido, de hasta 200 KB y 2048 × 2048 píxeles.');
+    }
+    return [textField($data,'name'),textField($data,'tagline',255),textField($data,'reward',255),$total,$color,$bg,$logo ?: null,$icon];
 }
 function cardView(array $card): array {$card['snapshot']=json_decode($card['snapshot'],true); $card['stamps']=(int)$card['stamps']; return $card;}
 function logAction(string $card, array $actor, string $type, int $amount=0, string $remarks=''): void {query('INSERT INTO transactions (id,card_id,actor_id,actor_name,actor_role,type,amount,remarks) VALUES (?,?,?,?,?,?,?,?)',[uid(),$card,$actor['id'] ?? null,$actor['name'],$actor['role'],$type,$amount,$remarks]);}
